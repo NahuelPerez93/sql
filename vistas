@@ -1,0 +1,39 @@
+CREATE VIEW vista_valvulas AS
+SELECT V.ID_VALVULA, V.CANTIDAD, M.NOMBRE AS MATERIAL, P.NOMBRE AS PROVEEDOR
+FROM fabrica_de_valvulas.Valvula V
+JOIN fabrica_de_valvulas.Materiales M ON V.ID_MATERIAL = M.ID_MATERIALES
+JOIN fabrica_de_valvulas.Proveedor P ON V.ID_MATERIAL = P.ID_MATERIAL;
+##muestra el ID de la válvula, la cantidad, el nombre del material y el nombre del proveedor para cada válvula
+
+CREATE VIEW vista_pedidos_detalle AS
+SELECT P.ID_PEDIDO, P.ID_EMPLEADO, P.ID_VALVULA, V.CANTIDAD, V.ID_MATERIAL, M.NOMBRE AS MATERIAL
+FROM fabrica_de_valvulas.Pedidos P
+JOIN fabrica_de_valvulas.Valvula V ON P.ID_VALVULA = V.ID_VALVULA
+JOIN fabrica_de_valvulas.Materiales M ON V.ID_MATERIAL = M.ID_MATERIALES;
+## el id del empleado responsable, el id de la válvula, el id pedido la cantidad de válvulas, el ID del material y el nombre del material asociado a cada pedido
+
+CREATE VIEW vista_envios_ciudad AS
+SELECT E.ID_ENVIO, E.ID_PEDIDO, P.ID_FABRICA, F.NOMBRE AS FABRICA, C.NOMBRE AS CIUDAD, E.FECHA, E.CANTIDAD
+FROM fabrica_de_valvulas.Envios E
+JOIN fabrica_de_valvulas.Pedidos P ON E.ID_PEDIDO = P.ID_PEDIDO
+JOIN fabrica_de_valvulas.Fabrica F ON P.ID_FABRICA = F.ID_FABRICA
+JOIN fabrica_de_valvulas.Ciudad C ON E.ID_CIUDAD = C.ID_CIUDAD;
+##muestra el ID del envío, el ID del pedido asociado, el ID de la fábrica, el nombre de la fábrica, el nombre de la ciudad de destino, la fecha del envío y la cantidad enviada.
+
+CREATE VIEW vista_inspecciones_inspector AS
+SELECT I.ID_INSPECCION, I.ID_VALVULA, V.CANTIDAD, I.ID_INSPECTOR, INSP.NOMBRE AS INSPECTOR, I.FECHA, I.RESULTADO, I.OBSERVACIONES
+FROM fabrica_de_valvulas.Inspecciones I
+JOIN fabrica_de_valvulas.Valvula V ON I.ID_VALVULA = V.ID_VALVULA
+JOIN fabrica_de_valvulas.Inspector INSP ON I.ID_INSPECTOR = INSP.ID_INSPECTOR;
+##aca se ve el ID de la inspección, el ID de la válvula inspeccionada, la cantidad de válvulas, el ID del inspector, el nombre del inspector, la fecha de la inspección, el resultado de la inspección y las observaciones 
+
+CREATE VIEW vista_pedidos_detalles_materiales AS
+SELECT P.ID_PEDIDO, P.ID_EMPLEADO, P.ID_VALVULA, V.CANTIDAD, M.NOMBRE AS MATERIAL, D.CANTIDAD AS CANTIDAD_PEDIDA
+FROM fabrica_de_valvulas.Pedidos P
+JOIN fabrica_de_valvulas.Valvula V ON P.ID_VALVULA = V.ID_VALVULA
+JOIN fabrica_de_valvulas.Materiales M ON V.ID_MATERIAL = M.ID_MATERIALES
+JOIN fabrica_de_valvulas.Detalle_del_pedido D ON P.ID_PEDIDO = D.ID_PEDIDO;
+##Esta vista muestra el ID del pedido, el ID del empleado responsable, el ID de la válvula, la cantidad de válvulas, el nombre del material y la cantidad pedida asociada a cada pedido
+
+
+
