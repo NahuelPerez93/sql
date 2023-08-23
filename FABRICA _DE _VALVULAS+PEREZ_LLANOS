@@ -1,0 +1,684 @@
+CREATE DATABASE fabrica_de_valvulas;
+
+USE fabrica_de_valvulas;
+
+
+CREATE TABLE fabrica_de_valvulas.Materiales (
+    ID_MATERIALES INT NOT NULL AUTO_INCREMENT,
+    NOMBRE VARCHAR(50) NOT NULL,
+    PRECIO DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (ID_MATERIALES)
+   
+);
+
+CREATE TABLE fabrica_de_valvulas.Ciudad (
+    ID_CIUDAD INT NOT NULL AUTO_INCREMENT,
+    NOMBRE VARCHAR(50) NOT NULL,
+    PROVINCIA VARCHAR(250) NOT NULL,
+    PRIMARY KEY (ID_CIUDAD)
+);
+
+
+
+CREATE TABLE fabrica_de_valvulas.Empleado (
+    ID_EMPLEADO INT NOT NULL AUTO_INCREMENT,
+    NOMBRE VARCHAR(50) NOT NULL,
+    CARGO VARCHAR(250),
+    DIRECCION VARCHAR(250),
+    TELEFONO VARCHAR(20),
+	PAGA_POR_HORA DECIMAL(10, 2),
+    PRIMARY KEY (ID_EMPLEADO)
+);
+
+
+CREATE TABLE fabrica_de_valvulas.Proveedor (
+    ID_PROVEEDOR INT NOT NULL AUTO_INCREMENT,
+    ID_MATERIAL INT NOT NULL,
+    NOMBRE VARCHAR(50) NOT NULL,
+    DIRECCION VARCHAR(250),
+    TELEFONO VARCHAR(20),
+    PRIMARY KEY (ID_PROVEEDOR),
+    FOREIGN KEY (ID_MATERIAL) REFERENCES Materiales(ID_MATERIALES) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE fabrica_de_valvulas.Valvula (
+    ID_VALVULA INT NOT NULL AUTO_INCREMENT,
+    ID_MATERIAL INT NOT NULL,
+    CANTIDAD VARCHAR (250),
+    PRIMARY KEY (ID_VALVULA),
+    FOREIGN KEY (ID_MATERIAL) REFERENCES Materiales(ID_MATERIALES) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
+CREATE TABLE fabrica_de_valvulas.Fabrica (
+  ID_FABRICA INT NOT NULL AUTO_INCREMENT,
+  Nombre VARCHAR(50) NOT NULL,
+  Direccion VARCHAR(250) NOT NULL,
+  ID_CIUDAD INT NOT NULL,
+  ID_PEDIDO INT NOT NULL,
+  ID_PROVEEDOR INT NOT NULL,
+  PRIMARY KEY (ID_FABRICA),
+  FOREIGN KEY (ID_PROVEEDOR) REFERENCES Proveedor (ID_PROVEEDOR) ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY (ID_CIUDAD) REFERENCES Ciudad (ID_CIUDAD) ON DELETE RESTRICT ON UPDATE CASCADE 
+);
+
+
+
+CREATE TABLE fabrica_de_valvulas.Pedidos (
+    ID_PEDIDO INT NOT NULL AUTO_INCREMENT,
+    ID_EMPLEADO INT NOT NULL,
+    ID_VALVULA INT NOT NULL,
+    ID_FABRICA INT NOT NULL,
+    PRIMARY KEY (ID_PEDIDO),
+    FOREIGN KEY (ID_EMPLEADO) REFERENCES Empleado(ID_EMPLEADO) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (ID_VALVULA) REFERENCES Valvula(ID_VALVULA) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (ID_FABRICA) REFERENCES fabrica (ID_FABRICA) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE fabrica_de_valvulas.Envios (
+    ID_ENVIO INT NOT NULL AUTO_INCREMENT,
+    ID_PEDIDO INT NOT NULL,
+    ID_CIUDAD INT NOT NULL,
+    FECHA DATE NOT NULL,
+    CANTIDAD VARCHAR(100),
+    PRIMARY KEY (ID_ENVIO),
+    FOREIGN KEY (ID_PEDIDO) REFERENCES Pedidos(ID_PEDIDO) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (ID_CIUDAD) REFERENCES ciudad (ID_CIUDAD) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE fabrica_de_valvulas.Cliente (
+    ID_CLIENTE INT NOT NULL AUTO_INCREMENT,
+    ID_PEDIDO INT NOT NULL,
+    ID_FABRICA INT NOT NULL,
+    NOMBRE VARCHAR(50) NOT NULL,
+    DIRECCION VARCHAR(250),
+    TELEFONO VARCHAR(20),
+    PRIMARY KEY (ID_CLIENTE),
+    FOREIGN KEY (ID_PEDIDO) REFERENCES pedidos (ID_PEDIDO) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (ID_FABRICA) REFERENCES fabrica (ID_FABRICA) ON DELETE RESTRICT ON UPDATE CASCADE
+    
+);
+
+CREATE TABLE fabrica_de_valvulas.Facturas (
+    ID_FACTURA INT NOT NULL AUTO_INCREMENT,
+    ID_PEDIDO INT NOT NULL,
+    FECHA DATE NOT NULL,
+    MONTO DECIMAL(10,2) NOT NULL,
+    ESTADO_FACTURA VARCHAR(50),
+    PRIMARY KEY (ID_FACTURA),
+    FOREIGN KEY (ID_PEDIDO) REFERENCES Pedidos(ID_PEDIDO) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
+
+CREATE TABLE fabrica_de_valvulas.Transporte (
+    ID_TRANSPORTE INT NOT NULL AUTO_INCREMENT,
+    ID_ENVIO INT NOT NULL,
+    NOMBRE VARCHAR(50) NOT NULL,
+    TELEFONO VARCHAR(20),
+    PRIMARY KEY (ID_TRANSPORTE),
+    FOREIGN KEY (ID_ENVIO) REFERENCES envios (ID_ENVIO) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE fabrica_de_valvulas.Detalle_del_pedido (
+    ID_DETALLEPEDIDO INT NOT NULL AUTO_INCREMENT,
+    ID_PEDIDO INT NOT NULL,
+    ID_VALVULA INT NOT NULL,
+    CANTIDAD INT NOT NULL,
+    PRECIO_UNITARIO DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (ID_DETALLEPEDIDO),
+    FOREIGN KEY (ID_PEDIDO) REFERENCES Pedidos(ID_PEDIDO) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (ID_VALVULA) REFERENCES Valvula(ID_VALVULA) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE fabrica_de_valvulas.Asistencia (
+    ID_ASISTENCIA INT NOT NULL AUTO_INCREMENT,
+    FECHA DATE NOT NULL,
+    HORA_ENTRADA TIME NOT NULL,
+    ID_EMPLEADO INT NOT NULL,
+    HORA_SALIDA TIME NOT NULL,
+    PRIMARY KEY (ID_ASISTENCIA),
+    FOREIGN KEY (ID_EMPLEADO) REFERENCES Empleado(ID_EMPLEADO) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+
+
+CREATE TABLE fabrica_de_valvulas.Inspector (
+    ID_INSPECTOR INT NOT NULL AUTO_INCREMENT,
+    NOMBRE VARCHAR(50) NOT NULL,
+    TELEFONO VARCHAR(20),
+    APELLIDO VARCHAR(50) NOT NULL,
+    PRIMARY KEY (ID_INSPECTOR)
+);
+CREATE TABLE fabrica_de_valvulas.Inspecciones (
+    ID_INSPECCION INT NOT NULL AUTO_INCREMENT,
+    ID_VALVULA INT NOT NULL,
+    ID_INSPECTOR INT NOT NULL,
+    FECHA DATE NOT NULL,
+    RESULTADO VARCHAR(20),
+    OBSERVACIONES VARCHAR(300),
+    PRIMARY KEY (ID_INSPECCION),
+    FOREIGN KEY (ID_VALVULA) REFERENCES Valvula(ID_VALVULA) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (ID_INSPECTOR) REFERENCES inspector(ID_INSPECTOR) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- ------------------------------------------- DATOS-----------------------------------------------------------------------------------------
+INSERT INTO fabrica_de_valvulas.materiales (ID_MATERIALES, NOMBRE, PRECIO) VALUES
+(NULL, 'ACERO', 93.80),
+(NULL, 'HIERRO', 49.50),
+(NULL, 'FUNDICION', 66.11);
+
+INSERT INTO fabrica_de_valvulas.ciudad (ID_CIUDAD, NOMBRE, PROVINCIA) VALUES
+(NULL, 'Buenos Aires', 'Buenos Aires'),
+(NULL, 'Córdoba', 'Córdoba'),
+(NULL, 'Rosario', 'Santa Fe'),
+(NULL, 'Mendoza', 'Mendoza'),
+(NULL, 'La Plata', 'Buenos Aires'),
+(NULL, 'Mar del Plata', 'Buenos Aires'),
+(NULL, 'San Miguel de Tucumán', 'Tucumán'),
+(NULL, 'Salta', 'Salta'),
+(NULL, 'Santa Fe', 'Santa Fe'),
+(NULL, 'San Juan', 'San Juan'),
+(NULL, 'Resistencia', 'Chaco'),
+(NULL, 'Bahía Blanca', 'Buenos Aires'),
+(NULL, 'Corrientes', 'Corrientes'),
+(NULL, 'Posadas', 'Misiones'),
+(NULL, 'Neuquén', 'Neuquén');
+
+INSERT INTO fabrica_de_valvulas.empleado (ID_EMPLEADO, NOMBRE, CARGO, DIRECCION, TELEFONO, PAGA_POR_HORA)VALUES
+(NULL, 'Juan Perez', 'Ayudante', 'Calle San Martín 123', 1134567890, 7.50),
+(NULL, 'Maria Gomez', 'Oficial', 'Avenida Rivadavia 456', 1145678901, 14.50),
+(NULL, 'Pedro Rodriguez', 'Encargado', 'Calle Belgrano 789', 1156789012, 20.00),
+(NULL, 'Ana Lopez', 'Ayudante', 'Avenida Corrientes 234', 1167890123, 7.50),
+(NULL, 'Carlos Martinez', 'Oficial', 'Calle Sarmiento 567', 1178901234, 14.50),
+(NULL, 'Laura Fernandez', 'Encargado', 'Avenida 9 de Julio 890', 1189012345, 20.00),
+(NULL, 'Sofia Ramirez', 'Ayudante', 'Calle Florida 123', 1190123456, 7.50),
+(NULL, 'Juan Martinez', 'Oficial', 'Avenida Pueyrredón 456', 1111234567, 14.50),
+(NULL, 'Maria Torres', 'Encargado', 'Calle Lavalle 789', 1112345678, 20.00),
+(NULL, 'Manuel Fernandez', 'Ayudante', 'Avenida Santa Fe 234', 1113456789, 7.50),
+(NULL, 'Ana Garcia', 'Oficial', 'Calle Córdoba 567', 1114567890, 14.50),
+(NULL, 'Pablo Lopez', 'Encargado', 'Avenida Callao 890', 1115678901, 20.00),
+(NULL, 'Lucia Martinez', 'Ayudante', 'Calle Maipú 123', 1116789012, 7.50),
+(NULL, 'Pedro Fernandez', 'Oficial', 'Avenida Congreso 456', 1117890123, 14.50),
+(NULL, 'Carolina Lopez', 'Encargado', 'Calle Alvear 789', 1118901234, 20.00),
+(NULL, 'Jorge Rodríguez', 'Ayudante', 'Avenida Rivadavia 234', 1119012345, 7.50),
+(NULL, 'Florencia Fernández', 'Oficial', 'Calle Sarmiento 567', 1110123456, 14.50),
+(NULL, 'Gabriel García', 'Encargado', 'Avenida Corrientes 890', 1111234567, 20.00),
+(NULL, 'Valentina Torres', 'Ayudante', 'Calle Florida 123', 1112345678, 7.50),
+(NULL, 'Miguel González', 'Oficial', 'Avenida Santa Fe 456', 1113456789, 14.50);
+
+INSERT INTO fabrica_de_valvulas.proveedor (ID_PROVEEDOR, ID_MATERIAL, NOMBRE, DIRECCION, TELEFONO) VALUES 
+(NULL, 1, 'Siderúrgica Lanús', 'Arias 123', 11345678),
+(NULL, 2, 'Hierros Argentinos', 'Ramón Cabrero 456', 11456789),
+(NULL, 3, 'MetalMundo', 'Villa Galicia 789', 11567890),
+(NULL, 1, 'Aceros del Sur', 'José León Suárez 234', 11678901),
+(NULL, 2, 'Metalurgica Lanús', 'Av. Remedios de Escalada 567', 11789012),
+(NULL, 3, 'Hierro y Acero', '9 de Julio 890', 11890123),
+(NULL, 1, 'Acindar', 'Hipólito Yrigoyen 1234', 11901234),
+(NULL, 2, 'Acero Inoxidable S.A.', 'Las Heras 5678', 11912345),
+(NULL, 3, 'Metalurgica Argentina', 'Sarmiento 9012', 11923456),
+(NULL, 1, 'Hierros del Plata', 'Laprida 3456', 11934567),
+(NULL, 2, 'Aceros Garmendia', 'Belgrano 6789', 11945678),
+(NULL, 3, 'Metalindustria', 'San Martín 0123', 11956789),
+(NULL, 1, 'Hierros Unidos', 'Pueyrredón 3456', 11967890),
+(NULL, 2, 'Metalacero', 'Mitre 6789', 11978901),
+(NULL, 3, 'Acero y Más', 'Rivadavia 0123', 11989012),
+(NULL, 1, 'Siderúrgica Argentina', 'Paso 3456', 11990123),
+(NULL, 2, 'Hierros y Aceros', 'Urquiza 6789', 11901234),
+(NULL, 3, 'Metalinox', 'San Juan 0123', 11912345),
+(NULL, 1, 'Aceros del Litoral', 'Santa Fe 3456', 11923456),
+(NULL, 2, 'Metalfer', 'Córdoba 6789', 11934567);
+
+INSERT INTO fabrica_de_valvulas.valvula (ID_VALVULA, ID_MATERIAL, CANTIDAD) VALUES 
+(NULL, 1, 12),
+(NULL, 3, 8),
+(NULL, 2, 19),
+(NULL, 1, 5),
+(NULL, 2, 17),
+(NULL, 3, 3),
+(NULL, 3, 14),
+(NULL, 1, 1),
+(NULL, 2, 10),
+(NULL, 1, 20),
+(NULL, 3, 7),
+(NULL, 2, 16),
+(NULL, 3, 9),
+(NULL, 2, 6),
+(NULL, 1, 18),
+(NULL, 2, 4),
+(NULL, 1, 15),
+(NULL, 3, 13),
+(NULL, 2, 2),
+(NULL, 3, 11);
+
+INSERT INTO fabrica_de_valvulas.fabrica (ID_FABRICA, Nombre, Direccion, ID_CIUDAD, ID_PROVEEDOR) VALUES 
+(NULL, 'Valvulera Argentina', 'Calle Rivadavia 123', 16, 15),
+(NULL, 'Fabrica de Válvulas del Sur', 'Av. San Martín 456', 24, 8),
+(NULL, 'Valvulas del Norte', 'Calle Mitre 789', 23, 18),
+(NULL, 'Industria de Válvulas', 'Av. Corrientes 987', 35, 4),
+(NULL, 'Valvulas Pampeanas', 'Calle Sarmiento 654', 29, 11);
+
+INSERT INTO fabrica_de_valvulas.Pedidos (ID_PEDIDO, ID_EMPLEADO, ID_VALVULA, ID_FABRICA) VALUES
+(NULL, 21, 13, 63),
+(NULL, 30, 7, 70),
+(NULL, 24, 4, 62),
+(NULL, 25, 18, 64),
+(NULL, 29, 11, 67),
+(NULL, 32, 6, 68),
+(NULL, 28, 16, 63),
+(NULL, 36, 1, 61),
+(NULL, 26, 9, 64),
+(NULL, 40, 15, 65),
+(NULL, 22, 2, 61),
+(NULL, 35, 14, 73),
+(NULL, 27, 8, 62),
+(NULL, 33, 19, 64),
+(NULL, 23, 5, 61),
+(NULL, 38, 3, 63),
+(NULL, 31, 20, 62),
+(NULL, 39, 10, 65),
+(NULL, 37, 17, 64),
+(NULL, 34, 12, 61);
+
+
+INSERT INTO fabrica_de_valvulas.envios (ID_ENVIO, ID_PEDIDO, ID_CIUDAD, FECHA, CANTIDAD) VALUES
+(NULL, 267, 25, '2023-03-10', 31),
+(NULL, 270, 18, '2023-04-02', 86),
+(NULL, 265, 23, '2023-06-16', 47),
+(NULL, 264, 24, '2023-04-28', 58),
+(NULL, 269, 19, '2023-06-04', 23),
+(NULL, 261, 26, '2023-03-22', 92),
+(NULL, 268, 21, '2023-05-19', 66),
+(NULL, 266, 17, '2023-03-13', 42),
+(NULL, 271, 22, '2023-05-05', 75),
+(NULL, 263, 20, '2023-04-15', 51),
+(NULL, 272, 16, '2023-06-12', 37),
+(NULL, 273, 25, '2023-03-31', 81),
+(NULL, 275, 26, '2023-06-23', 63),
+(NULL, 262, 24, '2023-03-28', 45),
+(NULL, 274, 23, '2023-06-08', 71),
+(NULL, 277, 21, '2023-04-06', 27),
+(NULL, 267, 17, '2023-06-19', 39),
+(NULL, 276, 22, '2023-04-21', 59),
+(NULL, 270, 20, '2023-05-31', 34),
+(NULL, 278, 19, '2023-03-16', 78);
+
+
+INSERT INTO fabrica_de_valvulas.cliente (ID_CLIENTE, ID_PEDIDO, ID_FABRICA, NOMBRE, DIRECCION, TELEFONO) VALUES
+(NULL, 269, 64, 'Techint', 'Calle Rivadavia 123', '11223344'),
+(NULL, 277, 72, 'Valvtronic', 'Calle Mitre 456', '11556699'),
+(NULL, 274, 68, 'YPF', 'Calle Alberdi 789', '11998877'),
+(NULL, 276, 73, 'Tenaris', 'Calle Moreno 321', '11442233'),
+(NULL, 271, 65, 'Velan', 'Calle Sarmiento 567', '11335566'),
+(NULL, 279, 69, 'Shell', 'Calle San Martín 890', '11669988'),
+(NULL, 270, 63, 'Aluar', 'Calle 25 de Mayo 432', '11112233'),
+(NULL, 273, 70, 'Emerson', 'Calle Independencia 987', '11889977'),
+(NULL, 275, 74, 'Chevron', 'Calle Belgrano 654', '11447722'),
+(NULL, 278, 66, 'Flowserve', 'Calle Pellegrini 321', '11773355'),
+(NULL, 268, 62, 'Aluar Aluminio Argentino', 'Calle Roca 234', '11002233'),
+(NULL, 272, 67, 'ExxonMobil', 'Calle Colón 876', '11334499'),
+(NULL, 280, 71, 'KSB', 'Calle San Lorenzo 543', '11991122'),
+(NULL, 267, 61, 'Ternium', 'Calle España 789', '11224488'),
+(NULL, 270, 63, 'Pan American Energy', 'Calle Brasil 321', '11668899'),
+(NULL, 273, 64, 'Acindar', 'Calle Italia 567', '11335577'),
+(NULL, 276, 73, 'Cameron', 'Calle Francia 890', '11442233'),
+(NULL, 271, 65, 'Vulcano', 'Calle Suiza 432', '11335566'),
+(NULL, 274, 68, 'Schlumberger', 'Calle Alemania 987', '11998877');
+
+
+
+INSERT INTO fabrica_DE_Valvulas.facturas (ID_FACTURA, ID_PEDIDO, FECHA, MONTO, ESTADO_FACTURA) VALUES
+(NULL, 267, '2023-03-15', 286.50, 'Pago'),
+(NULL, 265, '2023-05-10', 173.75, 'No pago'),
+(NULL, 280, '2023-04-28', 425.00, 'Pago'),
+(NULL, 271, '2023-06-02', 312.80, 'Pago'),
+(NULL, 268, '2023-03-20', 126.90, 'Pago'),
+(NULL, 275, '2023-05-25', 451.20, 'Pago'),
+(NULL, 289, '2023-06-11', 193.40, 'No pago'),
+(NULL, 284, '2023-05-07', 382.70, 'Pago'),
+(NULL, 278, '2023-04-16', 276.60, 'Pago'),
+(NULL, 288, '2023-06-22', 211.50, 'No pago'),
+(NULL, 277, '2023-04-03', 360.00, 'Pago'),
+(NULL, 266, '2023-05-29', 142.10, 'Pago'),
+(NULL, 279, '2023-06-14', 198.20, 'Pago'),
+(NULL, 290, '2023-04-21', 297.80, 'No pago'),
+(NULL, 292, '2023-03-17', 194.30, 'Pago'),
+(NULL, 282, '2023-05-01', 405.70, 'Pago'),
+(NULL, 263, '2023-06-06', 238.90, 'Pago'),
+(NULL, 272, '2023-03-24', 361.50, 'Pago'),
+(NULL, 281, '2023-05-13', 145.80, 'Pago'),
+(NULL, 290, '2023-06-18', 296.40, 'No pago');
+
+INSERT INTO transporte (ID_TRANSPORTE, ID_ENVIO, NOMBRE, TELEFONO) VALUES
+(NULL, 199, 'Transportes Cruz del Sur', '15678901'),
+(NULL, 203, 'Transportes San Jorge', '15987654'),
+(NULL, 206, 'Transportes Carrera', '15432109'),
+(NULL, 197, 'Transportes Central', '15123456'),
+(NULL, 204, 'Transportes Norteño', '15876543'),
+(NULL, 210, 'Transportes Sur Express', '15765432'),
+(NULL, 216, 'Transportes del Pacífico', '15234567'),
+(NULL, 212, 'Transportes Los Libertadores', '15345678'),
+(NULL, 195, 'Transportes Andina', '15789012'),
+(NULL, 219, 'Transportes del Sol', '15890123'),
+(NULL, 208, 'Transportes Austral', '15543210'),
+(NULL, 198, 'Transportes Ríos', '15120987'),
+(NULL, 207, 'Transportes Cóndor', '15321098'),
+(NULL, 200, 'Transportes Patagonia', '15654321'),
+(NULL, 211, 'Transportes Los Lagos', '15908765'),
+(NULL, 215, 'Transportes Los Andes', '15109876'),
+(NULL, 201, 'Transportes Metro', '15098765'),
+(NULL, 217, 'Transportes Express', '15789012'),
+(NULL, 213, 'Transportes del Norte', '15890123'),
+(NULL, 209, 'Transportes del Este', '15567890');
+
+INSERT INTO fabrica_de_valvulas.detalle_del_pedido (ID_DETALLEPEDIDO, ID_PEDIDO, ID_VALVULA, CANTIDAD, PRECIO_UNITARIO) VALUES
+(NULL, 268, 8, 62, 154.50),
+(NULL, 277, 19, 14, 131.25),
+(NULL, 274, 6, 88, 171.80),
+(NULL, 269, 15, 73, 126.45),
+(NULL, 271, 2, 37, 176.70),
+(NULL, 262, 5, 8, 125.40),
+(NULL, 267, 11, 91, 116.20),
+(NULL, 272, 16, 79, 120.75),
+(NULL, 276, 4, 48, 156.90),
+(NULL, 265, 17, 59, 165.10),
+(NULL, 263, 3, 67, 143.80),
+(NULL, 280, 12, 23, 137.50),
+(NULL, 278, 20, 29, 118.60),
+(NULL, 270, 13, 10, 185.60),
+(NULL, 261, 7, 95, 121.90),
+(NULL, 275, 18, 56, 198.30),
+(NULL, 264, 9, 42, 189.40),
+(NULL, 266, 14, 33, 103.70),
+(NULL, 273, 10, 84, 157.20),
+(NULL, 279, 1, 17, 196.80);
+
+INSERT INTO fabrica_de_valvulas.asistencia (ID_ASISTENCIA, FECHA, HORA_ENTRADA, ID_EMPLEADO, HORA_SALIDA) VALUES
+(NULL, '2023-06-06', '07:00:00', 26, '16:30:00'),
+(NULL, '2023-04-28', '07:00:00', 38, '17:00:00'),
+(NULL, '2023-03-20', '07:00:00', 40, '16:45:00'),
+(NULL, '2023-05-13', '07:00:00', 37, '16:15:00'),
+(NULL, '2023-04-03', '07:00:00', 29, '17:00:00'),
+(NULL, '2023-05-25', '07:00:00', 31, '16:45:00'),
+(NULL, '2023-06-18', '07:00:00', 33, '16:30:00'),
+(NULL, '2023-03-24', '07:00:00', 23, '16:30:00'),
+(NULL, '2023-06-14', '07:00:00', 35, '16:00:00'),
+(NULL, '2023-05-01', '07:00:00', 30, '16:15:00'),
+(NULL, '2023-05-09', '07:00:00', 22, '16:45:00'),
+(NULL, '2023-04-16', '07:00:00', 32, '16:30:00'),
+(NULL, '2023-03-28', '07:00:00', 36, '16:30:00'),
+(NULL, '2023-06-23', '07:00:00', 39, '16:15:00'),
+(NULL, '2023-05-17', '07:00:00', 24, '17:00:00'),
+(NULL, '2023-04-10', '07:00:00', 27, '16:45:00'),
+(NULL, '2023-06-09', '07:00:00', 28, '16:00:00'),
+(NULL, '2023-03-12', '07:00:00', 34, '16:30:00'),
+(NULL, '2023-05-05', '07:00:00', 25, '16:15:00'),
+(NULL, '2023-04-20', '07:00:00', 21, '17:00:00'),
+(NULL, '2023-07-02', '07:00:00', 32, '16:30:00'),
+(NULL, '2023-06-20', '07:00:00', 27, '16:45:00'),
+(NULL, '2023-04-15', '07:00:00', 35, '17:00:00'),
+(NULL, '2023-05-28', '07:00:00', 23, '16:15:00'),
+(NULL, '2023-07-14', '07:00:00', 39, '16:30:00'),
+(NULL, '2023-03-30', '07:00:00', 28, '16:45:00'),
+(NULL, '2023-06-12', '07:00:00', 33, '17:00:00'),
+(NULL, '2023-05-06', '07:00:00', 24, '16:15:00'),
+(NULL, '2023-07-27', '07:00:00', 37, '16:30:00'),
+(NULL, '2023-04-18', '07:00:00', 21, '16:45:00'),
+(NULL, '2023-06-05', '07:00:00', 29, '17:00:00'),
+(NULL, '2023-05-21', '07:00:00', 36, '16:15:00'),
+(NULL, '2023-07-08', '07:00:00', 22, '16:30:00'),
+(NULL, '2023-04-01', '07:00:00', 34, '16:45:00'),
+(NULL, '2023-06-16', '07:00:00', 26, '17:00:00'),
+(NULL, '2023-05-11', '07:00:00', 38, '16:15:00'),
+(NULL, '2023-07-23', '07:00:00', 25, '16:30:00'),
+(NULL, '2023-04-25', '07:00:00', 30, '16:45:00'),
+(NULL, '2023-06-08', '07:00:00', 31, '17:00:00'),
+(NULL, '2023-05-02', '07:00:00', 40, '16:15:00');
+
+
+INSERT INTO fabrica_de_valvulas.inspector (ID_INSPECTOR, NOMBRE, TELEFONO, APELLIDO) VALUES    
+(NULL, 'Pedro', 4522256, 'Puki'),
+(NULL, 'Juan', 12345678, 'González'),
+(NULL, 'María', 87654321, 'Rodríguez'),
+(NULL, 'Carlos', 98765432, 'García'),
+(NULL, 'Ana', 23456789, 'Fernández'),
+(NULL, 'Luis', 98765433, 'López'),
+(NULL, 'Laura', 45678901, 'Martínez'),
+(NULL, 'Manuel', 10987654, 'Pérez'),
+(NULL, 'Carolina', 21098765, 'Sánchez'),
+(NULL, 'Alejandro', 98765434, 'Romero'),
+(NULL, 'Valentina', 56789012, 'Gómez'),
+(NULL, 'Juanito', 87654323, 'Gonzalito'),
+(NULL, 'María', 12345679, 'Rodríguez'),
+(NULL, 'Carlitos', 76543218, 'García'),
+(NULL, 'Anita', 87654324, 'Fernández'),
+(NULL, 'Luisito', 98765435, 'López'),
+(NULL, 'Laura', 87654325, 'Martínez'),
+(NULL, 'Manuelito', 65432109, 'Pérez'),
+(NULL, 'Carolina', 76543219, 'Sánchez'),
+(NULL, 'Alex', 87654326, 'Romero');
+
+INSERT INTO Inspecciones (ID_INSPECCION, ID_VALVULA, ID_INSPECTOR, FECHA, RESULTADO, OBSERVACIONES) VALUES
+(NULL, 7, 95, '2023-03-15', 'Aprobada', 'Todo correcto'),
+(NULL, 15, 86, '2023-04-02', 'Baja', 'Sin ajustar'),
+(NULL, 9, 100, '2023-06-10', 'Arreglar', 'Sin empaque'),
+(NULL, 12, 82, '2023-05-18', 'Aprobada', 'Todo correcto'),
+(NULL, 3, 93, '2023-07-01', 'Baja', 'Sin ajustar'),
+(NULL, 18, 88, '2023-04-28', 'Arreglar', 'Todo correcto'),
+(NULL, 6, 97, '2023-06-24', 'Aprobada', 'Sin empaque'),
+(NULL, 11, 83, '2023-05-07', 'Baja', 'Todo correcto'),
+(NULL, 5, 101, '2023-04-15', 'Arreglar', 'Sin ajustar'),
+(NULL, 14, 91, '2023-07-12', 'Aprobada', 'Todo correcto'),
+(NULL, 1, 84, '2023-05-25', 'Baja', 'Sin empaque'),
+(NULL, 20, 98, '2023-03-30', 'Arreglar', 'Sin ajustar'),
+(NULL, 8, 87, '2023-06-17', 'Aprobada', 'Todo correcto'),
+(NULL, 17, 94, '2023-05-03', 'Baja', 'Sin empaque'),
+(NULL, 4, 103, '2023-07-06', 'Arreglar', 'Todo correcto'),
+(NULL, 13, 85, '2023-04-22', 'Aprobada', 'Sin ajustar'),
+(NULL, 10, 99, '2023-06-03', 'Baja', 'Todo correcto'),
+(NULL, 2, 89, '2023-05-13', 'Arreglar', 'Sin empaque'),
+(NULL, 19, 92, '2023-07-19', 'Aprobada', 'Todo correcto'),
+(NULL, 16, 90, '2023-05-31', 'Baja', 'Sin ajustar');
+
+
+-- ------------------------------------------------VISTAS---------------------------------------------------------
+
+CREATE VIEW vista_valvulas AS
+SELECT V.ID_VALVULA, V.CANTIDAD, M.NOMBRE AS MATERIAL, P.NOMBRE AS PROVEEDOR
+FROM fabrica_de_valvulas.Valvula V
+JOIN fabrica_de_valvulas.Materiales M ON V.ID_MATERIAL = M.ID_MATERIALES
+JOIN fabrica_de_valvulas.Proveedor P ON V.ID_MATERIAL = P.ID_MATERIAL;
+
+##muestra el ID de la válvula, la cantidad, el nombre del material y el nombre del proveedor para cada válvula
+
+CREATE VIEW vista_pedidos_detalle AS
+SELECT P.ID_PEDIDO, P.ID_EMPLEADO, P.ID_VALVULA, V.CANTIDAD, V.ID_MATERIAL, M.NOMBRE AS MATERIAL
+FROM fabrica_de_valvulas.Pedidos P
+JOIN fabrica_de_valvulas.Valvula V ON P.ID_VALVULA = V.ID_VALVULA
+JOIN fabrica_de_valvulas.Materiales M ON V.ID_MATERIAL = M.ID_MATERIALES;
+
+## el id del empleado responsable, el id de la válvula, el id pedido la cantidad de válvulas, el ID del material y el nombre del material asociado a cada pedido
+
+CREATE VIEW vista_envios_ciudad AS
+SELECT E.ID_ENVIO, E.ID_PEDIDO, P.ID_FABRICA, F.NOMBRE AS FABRICA, C.NOMBRE AS CIUDAD, E.FECHA, E.CANTIDAD
+FROM fabrica_de_valvulas.Envios E
+JOIN fabrica_de_valvulas.Pedidos P ON E.ID_PEDIDO = P.ID_PEDIDO
+JOIN fabrica_de_valvulas.Fabrica F ON P.ID_FABRICA = F.ID_FABRICA
+JOIN fabrica_de_valvulas.Ciudad C ON E.ID_CIUDAD = C.ID_CIUDAD;
+
+##muestra el ID del envío, el ID del pedido asociado, el ID de la fábrica, el nombre de la fábrica, el nombre de la ciudad de destino, la fecha del envío y la cantidad enviada.
+
+
+
+CREATE VIEW vista_inspecciones_inspector AS
+SELECT I.ID_INSPECCION, I.ID_VALVULA, V.CANTIDAD, I.ID_INSPECTOR, INSP.NOMBRE AS INSPECTOR, I.FECHA, I.RESULTADO, I.OBSERVACIONES
+FROM fabrica_de_valvulas.Inspecciones I
+JOIN fabrica_de_valvulas.Valvula V ON I.ID_VALVULA = V.ID_VALVULA
+JOIN fabrica_de_valvulas.Inspector INSP ON I.ID_INSPECTOR = INSP.ID_INSPECTOR;
+
+##aca se ve el ID de la inspección, el ID de la válvula inspeccionada, la cantidad de válvulas, el ID del inspector, el nombre del inspector, la fecha de la inspección, el resultado de la inspección y las observaciones 
+
+CREATE VIEW vista_pedidos_detalles_materiales AS
+SELECT P.ID_PEDIDO, P.ID_EMPLEADO, P.ID_VALVULA, V.CANTIDAD, M.NOMBRE AS MATERIAL, D.CANTIDAD AS CANTIDAD_PEDIDA
+FROM fabrica_de_valvulas.Pedidos P
+JOIN fabrica_de_valvulas.Valvula V ON P.ID_VALVULA = V.ID_VALVULA
+JOIN fabrica_de_valvulas.Materiales M ON V.ID_MATERIAL = M.ID_MATERIALES
+JOIN fabrica_de_valvulas.Detalle_del_pedido D ON P.ID_PEDIDO = D.ID_PEDIDO;
+
+##Esta vista muestra el ID del pedido, el ID del empleado responsable, el ID de la válvula, la cantidad de válvulas, el nombre del material y la cantidad pedida asociada a cada pedido
+
+-- -----------------------------------------------------FUNCIONES----------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE FUNCTION 
+calcular_total_pedido
+(p_id_pedido INT) 
+RETURNS DECIMAL(10, 2)
+READS SQL DATA
+BEGIN
+    DECLARE v_total DECIMAL(10, 2);
+
+    SELECT SUM(DP.CANTIDAD * DP.PRECIO_UNITARIO) INTO v_total
+    FROM fabrica_de_valvulas.Detalle_del_pedido DP
+    WHERE DP.ID_PEDIDO = p_id_pedido;
+
+    RETURN v_total;
+END $$
+
+DELIMITER ;
+-- -----------------------------------------
+DELIMITER $$
+
+CREATE FUNCTION 
+ObtenerInventarioValvula(valvula_id INT) 
+RETURNS INT
+READS SQL DATA
+BEGIN
+    DECLARE inventario INT;
+
+   
+    SELECT CANTIDAD INTO inventario
+    FROM fabrica_de_valvulas.Valvula
+    WHERE ID_VALVULA = valvula_id;
+
+   
+    IF inventario IS NULL THEN
+        SET inventario = 0;
+    END IF;
+
+    -- 
+    RETURN inventario;
+END;
+//
+DELIMITER ;
+
+
+-- -----------------
+DELIMITER $$
+CREATE PROCEDURE 
+actualizar_precio_material
+(IN p_id_material INT, IN p_nuevo_precio DECIMAL(10, 2))
+BEGIN
+    UPDATE Materiales
+    SET PRECIO = p_nuevo_precio
+    WHERE ID_MATERIALES = p_id_material;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE 
+OrdenarValvulasPorID()
+BEGIN
+   
+    SELECT *
+    FROM fabrica_de_valvulas.Valvula
+    ORDER BY ID_VALVULA ASC;
+END;
+//
+DELIMITER ;
+
+SELECT*FROM valvula;
+CALL OrdenarValvulasPorID();
+
+SELECT*FROM materiales;
+CALL actualizar_precio_material(2, 55.99);
+
+SELECT ID_VALVULA, CANTIDAD AS 'Inventario'
+FROM fabrica_de_valvulas.Valvula
+WHERE ID_VALVULA = 1;
+
+SELECT*FROM pedidos;
+SELECT calcular_total_pedido(262);
+
+-- --------------------------------------------------TRIGGERS--------------------------------------------------------------------------------------
+
+
+-- creacion de un trigger llamado after_insert_pedido que se va a activar después de insertar una nueva fila en la tabla Pedidos
+DELIMITER $$
+
+CREATE TRIGGER after_insert_pedido
+AFTER INSERT ON fabrica_de_valvulas.Pedidos
+FOR EACH ROW
+BEGIN
+    -- la cantidad y el material del pedido
+    DECLARE v_cantidad INT;
+    DECLARE v_material_id INT;
+    
+    SELECT CANTIDAD, ID_VALVULA INTO v_cantidad, v_material_id
+    FROM fabrica_de_valvulas.Detalle_del_pedido
+    WHERE ID_PEDIDO = NEW.ID_PEDIDO;
+    
+    -- Actualizar 
+    UPDATE fabrica_de_valvulas.Materiales
+    SET STOCK = STOCK - v_cantidad
+    WHERE ID_MATERIALES = v_material_id;
+END $$
+
+DELIMITER ;
+
+-- el objetivo de este trigger será actualizar automáticamente el campo CANTIDAD en la tabla Valvula cuando se realice un nuevo pedido.
+
+DELIMITER $$
+
+CREATE TRIGGER actualizar_cantidad_valvula
+AFTER INSERT ON fabrica_de_valvulas.Pedidos
+FOR EACH ROW
+BEGIN
+    DECLARE v_valvula_id INT;
+    DECLARE v_cantidad_pedido INT;
+    DECLARE v_cantidad_actual INT;
+
+    -- el ID de la válvula y la cantidad del nuevo pedido
+    SELECT ID_VALVULA, CANTIDAD INTO v_valvula_id, v_cantidad_pedido
+    FROM fabrica_de_valvulas.Pedidos
+    WHERE ID_PEDIDO = NEW.ID_PEDIDO;
+
+    -- Obtener la cantidad 
+    SELECT CANTIDAD INTO v_cantidad_actual
+    FROM fabrica_de_valvulas.Valvula
+    WHERE ID_VALVULA = v_valvula_id;
+
+   
+    SET v_cantidad_actual = v_cantidad_actual - v_cantidad_pedido;
+
+    -- Actualizar
+    UPDATE fabrica_de_valvulas.Valvula
+    SET CANTIDAD = v_cantidad_actual
+    WHERE ID_VALVULA = v_valvula_id;
+END $$
+
+DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
